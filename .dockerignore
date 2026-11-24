@@ -1,0 +1,7 @@
+node_modules
+dist
+.npm-cache
+.venv
+.pytest_cache
+__pycache__
+.git

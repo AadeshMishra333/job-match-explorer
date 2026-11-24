@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: job-match-explorer
+    runtime: docker
+    plan: free
+    healthCheckPath: /api/health
