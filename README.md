@@ -2,6 +2,8 @@
 
 A small, explainable candidate-to-job matching demo built for learning. It uses **12 invented job postings** and a deterministic baseline. It does not read live vacancies, use an LLM, predict hiring outcomes, or represent Elip's product.
 
+**[Open the live demo](https://job-match-explorer.onrender.com/).** The Docker deployment on Render was checked on 24 November 2026: the initial sample profile returned four matches, and unchecking remote only moved the Gurugram on-site internship into the shortlist. Free hosting may pause the service after inactivity, so a first visit can take longer.
+
 ## What the demo does
 
 Enter comma-separated skills and choose hard dealbreakers. The React page sends a profile to `POST /api/matches`. FastAPI first excludes roles that violate remote-only or internships-only rules, then excludes roles with no listed skill overlap. It ranks the remaining roles by number of shared skills (ties by title and ID) and returns the exact shared/missing skills used to assemble each reason. The browser renders a shortlist and a separate excluded list.
