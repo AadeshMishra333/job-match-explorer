@@ -2,13 +2,13 @@
 
 A small, explainable candidate-to-job matching demo built for learning. It uses **12 invented job postings** and a deterministic baseline. It does not read live vacancies, use an LLM, predict hiring outcomes, or represent Elip's product.
 
-**[Open the live demo](https://job-match-explorer.onrender.com/).** The Docker deployment on Render was checked on 24 November 2026: the initial sample profile returned four matches, and unchecking remote only moved the Gurugram on-site internship into the shortlist. Free hosting may pause the service after inactivity, so a first visit can take longer.
+**[Open the live demo](https://job-match-explorer.onrender.com/).** The Docker deployment on Render was checked on 24 November 2026. Free hosting may pause the service after inactivity, so a first visit can take longer.
 
 ## What the demo does
 
-Enter comma-separated skills and choose hard dealbreakers. The React page sends a profile to `POST /api/matches`. FastAPI first excludes roles that violate remote-only or internships-only rules, then excludes roles with no listed skill overlap. It ranks the remaining roles by number of shared skills (ties by title and ID) and returns the exact shared/missing skills used to assemble each reason. The browser renders a shortlist and a separate excluded list.
+Enter comma-separated skills, optionally prefer remote work, and choose whether to show internships only. The React page sends a profile to `POST /api/matches`. FastAPI excludes full-time roles when internships only is selected and roles with no listed skill overlap. When remote is preferred, it keeps on-site and hybrid matches but places them after remote matches; within each group it orders by shared skill count (ties by title and ID). It returns the exact shared/missing skills used to assemble each reason. The browser renders a shortlist and a separate excluded list.
 
-For example, start with **Product builder** (`Python, React`, remote only, internships only). Cedar Systems' on-site internship is excluded despite matching both skills. Uncheck remote only; the API now includes it. This is a hard dealbreaker. A future “remote preferred” option could instead keep it and lower its rank.
+For example, start with **Product builder** (`Python, React`, prefer remote, internships only). Cedar Systems' on-site internship matches both skills and remains visible after remote roles. Turn off the preference and it can rank alongside remote roles by skill overlap.
 
 ## Run locally
 
@@ -32,11 +32,11 @@ Open `http://127.0.0.1:8000/`. The API health check is `/api/health`; interactiv
 React profile state (src/App.jsx)
     → POST /api/matches
     → input validation (app/matching.py Profile)
-    → hard filters → skill overlap → stable ordering → field-backed reasons
+    → internship filter → skill overlap → remote preference → stable ordering → field-backed reasons
     → React match and exclusion cards
 ```
 
-`data/jobs.json` is the single source of sample job data. `data/evaluation_cases.json` contains ten fixed expected inclusion/exclusion cases, checked by `tests/test_matching.py`. The API test suite also checks filter precedence, repeatable ordering, reason fields, invalid input, health and frontend serving. See [the evaluation notes](docs/EVALUATION.md).
+`data/jobs.json` is the single source of sample job data. `data/evaluation_cases.json` contains ten fixed expected inclusion/exclusion cases, checked by `tests/test_matching.py`. The API test suite also checks remote ordering, repeatable results, reason fields, invalid input, health and frontend serving. See [the evaluation notes](docs/EVALUATION.md).
 
 ## Deployment
 
@@ -46,4 +46,4 @@ React profile state (src/App.jsx)
 
 - Keyword overlap misses synonyms and job intent. A person with `CSS` may see a design role even if they want software engineering. The score is a transparent toy heuristic, never a hiring probability.
 - All listings are synthetic; no live feed, scraping, semantic search, RAG, LLM agent, persistence, authentication, or real-user quality measurement is claimed.
-- Codex implemented the frontend, backend, tests and deployment preparation on 24 November 2026 after Aadesh requested a running demo. The previous stage 1 React preview was also Codex-built. Aadesh predicted that an on-site role should rank lower under “remote only”; we clarified that this describes a separate soft “remote preferred” rule. His own code change and end-to-end explanation remain unobserved. The CV should identify the artifact as AI-assisted rather than imply independent authorship.
+- Codex implemented the frontend, backend, tests and deployment preparation on 24 November 2026 after Aadesh requested a running demo. The previous stage 1 React preview was also Codex-built. Aadesh specified that an on-site role matching the skills should remain visible but rank lower when remote is selected; the control now says “Prefer remote” to reflect that rule. His own code change and end-to-end explanation remain unobserved. The CV identifies the artifact as AI-assisted.

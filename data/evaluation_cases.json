@@ -1,12 +1,12 @@
 [
-  {"id":"hard-remote","skills":["Python","React"],"remote_only":true,"internships_only":true,"job_id":"onsite-swe-intern","expected":"excluded"},
-  {"id":"allow-onsite","skills":["Python","React"],"remote_only":false,"internships_only":true,"job_id":"onsite-swe-intern","expected":"matched"},
-  {"id":"hard-internship","skills":["Python"],"remote_only":false,"internships_only":true,"job_id":"remote-ml-engineer","expected":"excluded"},
-  {"id":"allow-full-time","skills":["Python"],"remote_only":false,"internships_only":false,"job_id":"remote-ml-engineer","expected":"matched"},
-  {"id":"no-overlap","skills":["Python"],"remote_only":false,"internships_only":true,"job_id":"hybrid-design-intern","expected":"excluded"},
-  {"id":"all-overlap","skills":["Python","React","SQL"],"remote_only":true,"internships_only":true,"job_id":"remote-product-intern","expected":"matched"},
-  {"id":"case-fold","skills":["python"],"remote_only":true,"internships_only":true,"job_id":"remote-platform-intern","expected":"matched"},
-  {"id":"empty-skills","skills":[],"remote_only":false,"internships_only":false,"job_id":"remote-product-intern","expected":"excluded"},
-  {"id":"remote-frontend","skills":["React"],"remote_only":true,"internships_only":true,"job_id":"remote-frontend-intern","expected":"matched"},
-  {"id":"hybrid-blocked","skills":["Python","SQL"],"remote_only":true,"internships_only":true,"job_id":"hybrid-data-intern","expected":"excluded"}
+  {"id":"prefer-remote-keep-onsite","skills":["Python","React"],"remote_preferred":true,"internships_only":true,"job_id":"onsite-swe-intern","expected":"matched"},
+  {"id":"allow-onsite","skills":["Python","React"],"remote_preferred":false,"internships_only":true,"job_id":"onsite-swe-intern","expected":"matched"},
+  {"id":"hard-internship","skills":["Python"],"remote_preferred":false,"internships_only":true,"job_id":"remote-ml-engineer","expected":"excluded"},
+  {"id":"allow-full-time","skills":["Python"],"remote_preferred":false,"internships_only":false,"job_id":"remote-ml-engineer","expected":"matched"},
+  {"id":"no-overlap","skills":["Python"],"remote_preferred":false,"internships_only":true,"job_id":"hybrid-design-intern","expected":"excluded"},
+  {"id":"all-overlap","skills":["Python","React","SQL"],"remote_preferred":true,"internships_only":true,"job_id":"remote-product-intern","expected":"matched"},
+  {"id":"case-fold","skills":["python"],"remote_preferred":true,"internships_only":true,"job_id":"remote-platform-intern","expected":"matched"},
+  {"id":"empty-skills","skills":[],"remote_preferred":false,"internships_only":false,"job_id":"remote-product-intern","expected":"excluded"},
+  {"id":"remote-frontend","skills":["React"],"remote_preferred":true,"internships_only":true,"job_id":"remote-frontend-intern","expected":"matched"},
+  {"id":"hybrid-kept","skills":["Python","SQL"],"remote_preferred":true,"internships_only":true,"job_id":"hybrid-data-intern","expected":"matched"}
 ]

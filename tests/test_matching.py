@@ -13,7 +13,7 @@ cases = json.loads((Path(__file__).resolve().parents[1] / "data" / "evaluation_c
 
 @pytest.mark.parametrize("case", cases, ids=lambda case: case["id"])
 def test_fixed_evaluation_case(case):
-    response = client.post("/api/matches", json={key: case[key] for key in ("skills", "remote_only", "internships_only")})
+    response = client.post("/api/matches", json={key: case[key] for key in ("skills", "remote_preferred", "internships_only")})
     assert response.status_code == 200
     result = response.json()
     actual = "matched" if any(job["id"] == case["job_id"] for job in result["matched"]) else "excluded"
@@ -21,10 +21,14 @@ def test_fixed_evaluation_case(case):
     assert result["jobCount"] == len(JOBS)
 
 
-def test_remote_dealbreaker_precedes_perfect_skill_match():
-    result = rank_jobs(Profile(skills=["Python", "React", "JavaScript"], remote_only=True))
-    onsite = next(job for job in result["excluded"] if job["id"] == "onsite-swe-intern")
-    assert "remote only" in onsite["excludedReason"]
+def test_remote_preference_keeps_onsite_but_ranks_it_after_remote():
+    result = rank_jobs(Profile(skills=["Python", "React", "JavaScript"], remote_preferred=True))
+    matched = result["matched"]
+    onsite_index = next(index for index, job in enumerate(matched) if job["id"] == "onsite-swe-intern")
+    remote_index = next(index for index, job in enumerate(matched) if job["id"] == "remote-frontend-intern")
+    assert matched[onsite_index]["score"] > matched[remote_index]["score"]
+    assert onsite_index > remote_index
+    assert "stays visible below remote roles" in matched[onsite_index]["reason"]
 
 
 def test_reason_uses_only_actual_job_skills_and_ties_are_deterministic():
@@ -38,7 +42,7 @@ def test_reason_uses_only_actual_job_skills_and_ties_are_deterministic():
 
 
 def test_invalid_skill_is_rejected():
-    response = client.post("/api/matches", json={"skills": [" "], "remote_only": False})
+    response = client.post("/api/matches", json={"skills": [" "], "remote_preferred": False})
     assert response.status_code == 422
 
 

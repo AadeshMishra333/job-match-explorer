@@ -52,7 +52,7 @@ export default function App() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             skills: profile.skills.split(',').map((skill) => skill.trim()).filter(Boolean),
-            remote_only: profile.remoteOnly,
+            remote_preferred: profile.remotePreferred,
             internships_only: profile.internshipsOnly,
           }),
           signal: controller.signal,
@@ -92,7 +92,7 @@ export default function App() {
           <div className="hero-copy">
             <p className="eyebrow">See the decision, not just the list</p>
             <h1 id="page-title">Find roles that fit <em>your rules.</em></h1>
-            <p>Choose skills and dealbreakers. Every result tells you why it appeared—or why it was left out.</p>
+            <p>Choose skills and preferences. Every result tells you why it appeared—or why it was left out.</p>
           </div>
           <div className="hero-step" aria-label="How this preview works">
             <span>01 / Edit your profile</span><span>02 / Review matches</span><span>03 / Inspect exclusions</span>
@@ -109,16 +109,16 @@ export default function App() {
             </div>
             <label className="field-label" htmlFor="skills">Skills <span>separate with commas</span></label>
             <input id="skills" type="text" value={profile.skills} onChange={(event) => setField('skills', event.target.value)} placeholder="Python, React, SQL" />
-            <fieldset className="checks"><legend>Dealbreakers</legend>
-              <label className="check-row"><input type="checkbox" checked={profile.remoteOnly} onChange={(event) => setField('remoteOnly', event.target.checked)} /><span><strong>Remote only</strong><small>Hide on-site and hybrid roles</small></span></label>
+            <fieldset className="checks"><legend>Preferences and filters</legend>
+              <label className="check-row"><input type="checkbox" checked={profile.remotePreferred} onChange={(event) => setField('remotePreferred', event.target.checked)} /><span><strong>Prefer remote</strong><small>Keep other roles, but rank them below remote roles</small></span></label>
               <label className="check-row"><input type="checkbox" checked={profile.internshipsOnly} onChange={(event) => setField('internshipsOnly', event.target.checked)} /><span><strong>Internships only</strong><small>Hide full-time roles</small></span></label>
             </fieldset>
-            <p className="panel-footnote">This preview runs locally in your browser. The jobs are invented examples, not open applications.</p>
+            <p className="panel-footnote">This demo uses an API and invented jobs, not open applications.</p>
           </aside>
 
           <div className="results" aria-live="polite">
             <section aria-labelledby="matches-heading">
-              <div className="results-heading"><div><span className="section-kicker">SHORTLIST · {jobCount || 12} SAMPLE ROLES</span><h2 id="matches-heading">Your matches <span className="count">{matched.length}</span></h2></div><p>Ordered by listed skill overlap</p></div>
+              <div className="results-heading"><div><span className="section-kicker">SHORTLIST · {jobCount || 12} SAMPLE ROLES</span><h2 id="matches-heading">Your matches <span className="count">{matched.length}</span></h2></div><p>{profile.remotePreferred ? 'Remote first, then listed skill overlap' : 'Ordered by listed skill overlap'}</p></div>
               {error ? <div className="empty-state" role="alert"><h3>Matches unavailable</h3><p>{error}</p></div> : loading ? <p className="quiet-state">Checking your preferences…</p> : matched.length ? <div className="card-list">{matched.map((job) => <JobCard key={job.id} job={job} />)}</div> : <div className="empty-state"><h3>No matches with these rules</h3><p>Add a skill or loosen a dealbreaker to see more sample jobs.</p></div>}
             </section>
             <section className="excluded-section" aria-labelledby="excluded-heading">

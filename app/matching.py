@@ -11,7 +11,7 @@ JOBS = json.loads(JOBS_PATH.read_text(encoding="utf-8"))
 
 class Profile(BaseModel):
     skills: list[str] = Field(default_factory=list, max_length=30)
-    remote_only: bool = False
+    remote_preferred: bool = False
     internships_only: bool = False
 
     @field_validator("skills")
@@ -31,13 +31,10 @@ class Profile(BaseModel):
 
 
 def rank_jobs(profile: Profile, jobs: list[dict] = JOBS) -> dict:
-    """Apply hard filters, then count listed skill overlap. Stable tie order by title/id."""
+    """Filter internships and skill gaps, then apply the optional remote preference."""
     wanted = {skill.casefold() for skill in profile.skills}
     matched, excluded = [], []
     for job in jobs:
-        if profile.remote_only and job["mode"] != "remote":
-            excluded.append({**job, "excludedReason": f'{job["location"]} is {job["mode"]}; you selected remote only.'})
-            continue
         if profile.internships_only and job["type"] != "internship":
             excluded.append({**job, "excludedReason": "This is a full-time role; you selected internships only."})
             continue
@@ -48,6 +45,11 @@ def rank_jobs(profile: Profile, jobs: list[dict] = JOBS) -> dict:
         missing = [skill for skill in job["skills"] if skill.casefold() not in wanted]
         reason = f'Matches {", ".join(overlap)} from your skills'
         reason += f'; you could explore {", ".join(missing)}.' if missing else '; all listed skills match.'
+        if profile.remote_preferred:
+            reason += " Remote preference: this role is remote." if job["mode"] == "remote" else f' Remote preference: this {job["mode"]} role stays visible below remote roles.'
         matched.append({**job, "overlap": overlap, "missing": missing, "score": len(overlap), "reason": reason})
-    matched.sort(key=lambda job: (-job["score"], job["title"].casefold(), job["id"]))
+    matched.sort(key=lambda job: (
+        job["mode"] != "remote" if profile.remote_preferred else False,
+        -job["score"], job["title"].casefold(), job["id"],
+    ))
     return {"matched": matched, "excluded": excluded, "jobCount": len(jobs)}
